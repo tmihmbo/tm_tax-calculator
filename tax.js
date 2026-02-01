@@ -1,50 +1,42 @@
-"use strict";
-
-const $ = selector => document.querySelector(selector);
-
-const getErrorMsg = lbl => `${lbl} must be a valid number greater than zero.`;
-const getErrorMsgTax = lbl => `${lbl} must be a valid number greater than zero and less than 100.`;
+// Function to handle the calculation
 const error_message = document.getElementById("error_message");
 
-const focusAndSelect = selector => {
-    const elem = $(selector);
-    elem.focus();
-    elem.select();
-};
-
-const calculateTax = (subtotal, taxRate) => {
-    const taxAmount = subtotal * taxRate/100; 
-    return taxAmount; 
-};
-
 const processEntries = () => {
+    // Get the input elements
+    const saleInput = document.getElementById("sale");
+    const taxInput = document.getElementById("tax");
+    const totalInput = document.getElementById("total");
 
-    const sale = parseFloat($("#sale").value);
-    const tax = parseFloat($("#tax").value);
+    const sale = parseFloat(saleInput.value);
+    const taxRate = parseFloat(taxInput.value);
     error_message.textContent = "";
+
+    // Validation
     if (isNaN(sale) || sale <= 0) {
-            error_message.textContent = getErrorMsgTax("sale"); 
-        focusAndSelect("#sale");
-    } else if (isNaN(tax) || tax <= 0 || tax >= 100) {
-        error_message.textContent = getErrorMsgTax("tax rate"); 
-        focusAndSelect("#tax");
+        error_message.textContent = "Please enter a valid number greater than zero for Sale Amount.";
+        saleInput.focus();
+    } else if (isNaN(taxRate) || taxRate <= 0 || taxRate >= 100) {
+        error_message.textContent = "Please enter a valid number greater than zero and less than 100 for Tax Rate.";
+        taxInput.focus();
     } else {
-         $("#total").value = (sale + calculateTax(sale, tax)).toFixed(2); 
-         console.log("Total=" + $("#total").value); 
+        // Calculation
+        const taxAmount = (sale * taxRate / 100);
+        const total = sale + taxAmount;
+        totalInput.value = total.toFixed(2);
     }
-    const text = error_message.textContent;
-    error_message.textContent = text.charAt(0).toUpperCase() + text.slice(1);
 };
 
+// Function to clear all fields
 const clearEntries = () => {
-    $("#sale").value = "";
-    $("#tax").value = "";
-    $("#total").value = "";
+    document.getElementById("sale").value = "";
+    document.getElementById("tax").value = "";
+    document.getElementById("total").value = "";
     error_message.textContent = "";
+    document.getElementById("sale").focus();
 };
 
+// Attach events when the DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => {
-    $("#calculate_btn").addEventListener("click", processEntries);
-    $("#clear_btn").addEventListener("click", clearEntries);
-    $("#sale").focus();
+    document.getElementById("calculate_btn").addEventListener("click", processEntries);
+    document.getElementById("clear_btn").addEventListener("click", clearEntries);
 });
